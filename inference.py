@@ -37,14 +37,14 @@ if __name__ == '__main__':
     print('Initializing Grad-TTS...')
  
     if params.teacher:
-        generator = Comospeech(len(symbol_chinese)+1, params.n_spks, params.spk_emb_dim,
+        generator = Comospeech(len(symbol_chinese), params.n_spks, params.spk_emb_dim,
                         params.n_enc_channels, params.filter_channels,
                         params.filter_channels_dp, params.n_heads, params.n_enc_layers,
                         params.enc_kernel, params.enc_dropout, params.window_size,
                         params.n_feats, ).cuda()
  
     else:
-        generator = Comospeech(len(symbol_chinese)+1, params.n_spks, params.spk_emb_dim,
+        generator = Comospeech(len(symbol_chinese), params.n_spks, params.spk_emb_dim,
                         params.n_enc_channels, params.filter_channels,
                         params.filter_channels_dp, params.n_heads, params.n_enc_layers,
                         params.enc_kernel, params.enc_dropout, params.window_size,
@@ -82,11 +82,11 @@ if __name__ == '__main__':
             y_enc, y_dec, attn = generator.forward(x, x_lengths, n_timesteps=args.timesteps)
             t = (dt.datetime.now() - t).total_seconds()
 
-            print(f' RTF: {t * 22050 / (y_dec.shape[-1] * 256)}')
+            print(f' RTF: {t * 16000 / (y_dec.shape[-1] * 256)}')
             
  
             audio = (vocoder.forward(y_dec).cpu().squeeze().clamp(-1, 1).numpy() * 32768).astype(np.int16)
             
-            write(save_dir+f'sample_{str(i).zfill(3)}.wav', 22050, audio)
+            write(save_dir+f'sample_{str(i).zfill(3)}.wav', 16000, audio)
 
     print('Done. Check out `out` folder for samples.')
