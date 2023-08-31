@@ -66,7 +66,7 @@ def text2sequence(text):
     :param text:
     :return:
     """
-    phs = text2phoneme(text)
+    phs = chartext2phoneme(text)
     seq = phoneme2sequence(phs)
     return seq
 
