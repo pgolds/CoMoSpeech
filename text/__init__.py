@@ -3,13 +3,25 @@
 import re
 from text import cleaners
 from text.symbols import symbols
-
+from text.mix.sequence import phoneme2sequence
 
 _symbol_to_id = {s: i for i, s in enumerate(symbols)}
 _id_to_symbol = {i: s for i, s in enumerate(symbols)}
 
 _curly_re = re.compile(r'(.*?)\{(.+?)\}(.*)')
 
+def cleaned_text_to_sequence(cleaned_text):
+  '''Converts a string of text to a sequence of IDs corresponding to the symbols in the text.
+    Args:
+      text: string to convert to a sequence
+    Returns:
+      List of integers corresponding to the symbols in the text
+  '''
+  # sequence = [_symbol_to_id[symbol] for symbol in cleaned_text.split()]
+
+  sequence = phoneme2sequence(cleaned_text.split())
+
+  return sequence
 
 def get_arpabet(word, dictionary):
     word_arpabet = dictionary.lookup(word)
