@@ -9,7 +9,7 @@ from model.text_encoder import TextEncoder
 from model.utils import sequence_mask, generate_path, duration_loss, fix_len_compatibility
 
 from model.como import Como
-
+from models import Generator
 
 class Comospeech(BaseModule):
     def __init__(self, n_vocab, n_spks, spk_emb_dim, n_enc_channels, filter_channels, filter_channels_dp, 
@@ -35,7 +35,16 @@ class Comospeech(BaseModule):
         self.encoder = TextEncoder(n_vocab, n_feats, n_enc_channels, 
                                    filter_channels, filter_channels_dp, n_heads, 
                                    n_enc_layers, enc_kernel, enc_dropout, window_size)
-        self.decoder = Como( teacher)  
+        self.decoder = Como( teacher)
+
+        self.dec = Generator({
+            "resblock_kernel_sizes": [3,7,11],
+            "upsample_rates": [8,8,2,2],
+            "upsample_initial_channel": 512,
+            "resblock": "1",
+            "upsample_kernel_sizes": [16, 16, 4, 4],
+            "resblock_dilation_sizes": [[1, 3, 5], [1, 3, 5], [1, 3, 5]],
+        })
 
     @torch.no_grad()
     def forward(self, x, x_lengths, n_timesteps,spk=None,  length_scale=1.0):
@@ -86,7 +95,10 @@ class Comospeech(BaseModule):
         decoder_outputs = self.decoder(mu_y, y_mask, mu_y, t_steps =n_timesteps,  infer=True) #n_timesteps
         decoder_outputs = decoder_outputs[:, :, :y_max_length]
 
-        return encoder_outputs, decoder_outputs, attn[:, :, :y_max_length]
+        # hifigan dec
+        o = self.dec(decoder_outputs)
+
+        return encoder_outputs, decoder_outputs, attn[:, :, :y_max_length], o
 
     def compute_loss(self, x, x_lengths, y, y_lengths, spk=None, out_size=None):
         """
