@@ -14,7 +14,7 @@ import params
 from model.tts import  Comospeech
 from data import TextMelDataset, TextMelBatchCollate
 from utils import plot_tensor, save_plot,load_teacher_model
-from text.symbols import symbols
+from text.mix.symbol import symbol_chinese
  
 
 train_filelist_path = params.train_filelist_path
@@ -29,7 +29,7 @@ out_size = params.out_size
 learning_rate = params.learning_rate
 random_seed = params.seed
 
-nsymbols = len(symbols) + 1 if add_blank else len(symbols)
+nsymbols = len(symbol_chinese) + 1 if add_blank else len(symbol_chinese)
 n_enc_channels = params.n_enc_channels
 filter_channels = params.filter_channels
 filter_channels_dp = params.filter_channels_dp
