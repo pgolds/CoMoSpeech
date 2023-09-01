@@ -2,7 +2,6 @@ import warnings
 
 warnings.filterwarnings('ignore')
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 import numpy as np
 from tqdm import tqdm
 import copy
